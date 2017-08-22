@@ -1,0 +1,5 @@
+DOCKER_NETWORK=dockerzcsdevmachine_default
+DOCKER_DNS=10.0.0.2
+ZIMBRA_HOST=zcs-dev.test
+ZIMBRA_DOMAIN=zcs-dev.test
+ZIMBRA_PASSWORDS=zimbra

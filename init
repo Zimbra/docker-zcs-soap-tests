@@ -1,0 +1,41 @@
+#!/bin/bash
+# Perform runtime initialization of container and update the 
+# /opt/zimbra/qa/global.properties with proper configuration
+# Expects the following envirnment variables:
+#   ZIMBRA_HOST
+#   ZIMBRA_DOMAIN
+#   ZIMBRA_PASSWORDS
+
+# Update the config file
+echo "updating config"
+sed -i.bak -e "s/localhost/${ZIMBRA_HOST}/" -e "s/zimbra\.com/${ZIMBRA_DOMAIN}/" -e "s/test123/${ZIMBRA_PASSWORDS}/" /opt/qa/soapvalidator/conf/global.properties
+# Fire up STAF
+export PATH=/usr/local/staf/bin:$PATH
+echo 'PATH=/usr/local/staf/bin:$PATH' >> /root/.bashrc
+echo "starting STAF"
+/usr/local/staf/startSTAFProc.sh
+sleep 5
+echo "adding STAF services"
+STAF local service add service SOAP LIBRARY JSTAF EXECUTE /opt/qa/soapvalidator/bin/zimbrastaf.jar
+STAF local service add service LOG LIBRARY STAFLog
+# Instructions to user:
+echo "************************************************************************"
+echo "If necessary, please execute the following command(s) on your"
+echo "mailbox server(s) before running any SOAP harness tests:"
+echo "  zmlocalconfig -e allow_unauthed_ping=true"
+echo "  zmmailboxdctl restart"
+echo ""
+echo "************************************************************************"
+echo "To connect to the soap container run this:"
+echo "  docker exec -it soap bash"
+echo "************************************************************************"
+echo "Example: To run a single test:"
+echo ""
+echo "STAF LOCAL soap EXECUTE zcs-dev.test ZIMBRAQAROOT /opt/qa/soapvalidator/ DIRECTORY /opt/qa/soapvalidator/data/soapvalidator/MailClient/Tasks/Bugs/bug30544.xml LOG /opt/ SUITE SMOKE"
+echo ""
+echo "Example: To run all the tests under a specific directory:"
+echo ""
+echo "STAF LOCAL soap EXECUTE zcs-dev.test ZIMBRAQAROOT /opt/qa/soapvalidator/ DIRECTORY /opt/qa/soapvalidator/data/soapvalidator/MailClient/Tasks/Bugs/ LOG /opt/ SUITE SMOKE"
+echo ""
+echo "************************************************************************"
+/bin/sleep infinity
