@@ -5,15 +5,6 @@
 This let's you spin up a Docker container from which you can execute SOAP harness tests
 against an external Zimbra instance.
 
-**Note:** To build the image, it currently assumes you have the following file available in this directory:
-
-	soapvalidator.tar.gz
-
-This file is a tar of the SOAP harness tests.  Once we have had a chance to go through these and
-sanitize everything, this repo will be updated so that the image build process pulls down the 
-file automatically.
-
-
 ## Configuration
 
 Copy the file `DOT-env` to `.env` and change the values to be appropriate for the cluster you
