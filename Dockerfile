@@ -34,15 +34,14 @@ RUN apt-get update && \
     wget
 
 WORKDIR /tmp
-COPY ./soapvalidator.tar.gz /tmp/soapvalidator.tar.gz
-# COPY ./STAF3426-setup-linux-amd64-NoJVM.bin /tmp/STAF3426-setup-linux-amd64-NoJVM.bin
 COPY ./init /tmp/init
 # Unpack the QA soapvalidator tests to /opt/qa/soapvalidator
 # Install STAF to /usr/local/staf
 # Add the STAF libraries to the END of the list of places where libraries are searched
 # Some of the libraries included with STAF are wonky and will bork normal commands
 # if they are loaded first.
-RUN curl -L -O http://downloads.sourceforge.net/project/staf/staf/V3.4.26/STAF3426-setup-linux-amd64-NoJVM.bin && \
+RUN curl -L -O https://s3.amazonaws.com/zcsdocker/soapvalidator.tar.gz && \
+    curl -L -O http://downloads.sourceforge.net/project/staf/staf/V3.4.26/STAF3426-setup-linux-amd64-NoJVM.bin && \
     mkdir -p /opt/qa && \
     tar xzvf /tmp/soapvalidator.tar.gz -C /opt/qa/ && \
     chmod +x /tmp/STAF3426-setup-linux-amd64-NoJVM.bin && \
