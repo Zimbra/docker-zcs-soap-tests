@@ -2,13 +2,12 @@
 
 ## Introduction
 
-This let's you spin up a Docker container from which you can execute SOAP harness tests
-against an external Zimbra instance.
+This lets you spin up a Docker container that will run the Zimbra SOAP-harness SanityTest suite against a running ZCS instance.
+
 
 ## Configuration
 
-Copy the file `DOT-env` to `.env` and change the values to be appropriate for the cluster you
-want to test.
+Copy the file `DOT-env` to `.env` and change the values to be appropriate for the cluster you want to test.
 
 - `DOCKER_NETWORK` - This is the name of the Docker network you want the container that you start up to belong to. You can list all available Docker networks by running the command `docker network ls`.
 - `DOCKER_DNS` - This is the IP address of a DNS server that is running in the `DOCKER_NETWORK`.
@@ -22,8 +21,7 @@ Run the `build-image` script to build the image. It will create the image `zimbr
 
 ## Running the SanityTest suited
 
-Run the `run-image` script to fire up a container called `soap`.  This will automatically run the `SanityTest` suite then exit.
+Run the `run-test-suite` script to fire up a container called `soap`.  This will automatically run the `SanityTest` suite then exit.  This script will also provide some output while the test is running so you can see how many tests have completed.  It will automatically exit once the test suite has finished.
 
-	./run-image
+The test results will be located in the `results` directory, which is mounted into the `soap` container while it is running.  The next time you run the test suite, if there are old test results in the `results` directory, they will be saved in a date/time stamped *.tgz archive.
 
-There is no output to the terminal until the test is finished. However you can see results accumulate in the `results` directory, which is mounted into the `soap` test container.
