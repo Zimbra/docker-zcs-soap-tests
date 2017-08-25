@@ -1,13 +1,18 @@
 #!/bin/bash
 # Run the image zimbra/soap-harness:latest, passing in the appropriate
-# settings
+# settings.
 
 DP=$(dirname $0)
 pushd "${DP}"
 ABS=$(pwd)
 popd
 
+CN=soap
 EF="${DP}/.env"
+RD="${DP}/results"
+RTD="${RD}/soapvalidator/SanityTest"
+SW=10
+SW2=30
 
 if [ ! -f "${EF}" ]
 then
@@ -16,13 +21,49 @@ then
 fi
 . "${EF}"
 
+# If the RD is not empty, tar it up first to preserve the information
+
+if [ -d "${RTD}" ]
+then
+    RTDB="${RD}-$(date -r results/soapvalidator/SanityTest +'%Y-%m-%dT%H:%M:%S').tar.gz"
+    echo "Found old test data in ${RD}.  Backing up to ${RTDB}"
+    tar cfz "${RTDB}" "${RD}"
+    rm -rf "${RD}"/*
+fi
+
 
 docker run --network ${DOCKER_NETWORK} \
-  --name soap \
+  --name ${CN} \
   -v "${ABS}/results":/results \
   --dns ${DOCKER_DNS} --dns 8.8.8.8 \
-  --hostname soap.test \
+  --hostname ${CN}.test \
   --env-file "${EF}" \
+  -d \
   --rm \
   zimbra/soap-harness:latest
 
+# This just periodically counts the results files and reports results
+# so you don't get bored waiting for the test to finish.
+
+SID=$(docker ps --filter "name=${CN}" -q)
+while [ "${SID}x" = "x" ]
+do
+    echo "$(date) - Waiting for ${CN} container to start..."
+    sleep ${SW}
+    SID=$(docker ps --filter "name=${CN}" -q)
+done
+
+while [ ! -d "${RTD}" ]
+do
+    echo "$(date) - Waiting for tests to start..."
+    sleep ${SW}
+done
+
+while [ "${SID}x" != "x" ]
+do
+    echo "$(date) - $(find ${RTD} | wc | awk '{print $1}') completed test(s)..."
+    sleep ${SW2}
+    SID=$(docker ps --filter "name=${CN}" -q)
+done
+
+echo "$(date) - Tests finished.  Results in the ${RD} directory."
