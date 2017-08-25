@@ -18,20 +18,4 @@ sleep 5
 echo "adding STAF services"
 STAF local service add service SOAP LIBRARY JSTAF EXECUTE /opt/qa/soapvalidator/bin/zimbrastaf.jar
 STAF local service add service LOG LIBRARY STAFLog
-# Instructions to user:
-echo "************************************************************************"
-echo "If necessary, please execute the following command(s) on your"
-echo "mailbox server(s) before running any SOAP harness tests:"
-echo "  zmlocalconfig -e allow_unauthed_ping=true"
-echo "  zmmailboxdctl restart"
-echo ""
-echo "************************************************************************"
-echo "To connect to the soap container run this:"
-echo "  docker exec -it soap bash"
-echo "************************************************************************"
-echo ""
-echo "Example: To run the SanityTests:"
-echo ""
-echo "STAF LOCAL soap EXECUTE ${ZIMBRA_HOST} ZIMBRAQAROOT /opt/qa/soapvalidator/ DIRECTORY  /opt/qa/soapvalidator/data/soapvalidator/SanityTest/ LOG /opt/results/ SUITE SANITY"
-echo "************************************************************************"
-/bin/sleep infinity
+STAF LOCAL soap EXECUTE ${ZIMBRA_HOST} ZIMBRAQAROOT /opt/qa/soapvalidator/ DIRECTORY  /opt/qa/soapvalidator/data/soapvalidator/SanityTest/ LOG /results/ SUITE SANITY

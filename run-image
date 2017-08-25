@@ -3,6 +3,10 @@
 # settings
 
 DP=$(dirname $0)
+pushd "${DP}"
+ABS=$(pwd)
+popd
+
 EF="${DP}/.env"
 
 if [ ! -f "${EF}" ]
@@ -11,10 +15,14 @@ then
     exit 1
 fi
 . "${EF}"
+
+
 docker run --network ${DOCKER_NETWORK} \
   --name soap \
+  -v "${ABS}/results":/results \
   --dns ${DOCKER_DNS} --dns 8.8.8.8 \
   --hostname soap.test \
   --env-file "${EF}" \
-  -dit zimbra/soap-harness:latest /opt/qa/init
+  --rm \
+  zimbra/soap-harness:latest
 
