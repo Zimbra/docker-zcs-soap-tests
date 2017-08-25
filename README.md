@@ -20,33 +20,10 @@ want to test.
 
 Run the `build-image` script to build the image. It will create the image `zimbra/soap-harness:latest`, which you can see by running the `docker images` command.
 
-## Starting a test container
+## Running the SanityTest suited
 
-Run the `run-image` script to fire up a container called `soap`.  It will be run in detached mode.  A conventient way to run it is as follows:
+Run the `run-image` script to fire up a container called `soap`.  This will automatically run the `SanityTest` suite then exit.
 
-	./run-image && docker logs -f soap
+	./run-image
 
-It starts quickly and at the end you will see some helpful information:
-
-    ************************************************************************
-    If necessary, please execute the following command(s) on your
-    mailbox server(s) before running any SOAP harness tests:
-      zmlocalconfig -e allow_unauthed_ping=true
-      zmmailboxdctl restart
-    
-    ************************************************************************
-    To connect to the soap container run this:
-      docker exec -it soap bash
-    ************************************************************************
-    Example: To run a single test:
-    
-    STAF LOCAL soap EXECUTE zcs-dev.test ZIMBRAQAROOT /opt/qa/soapvalidator/ DIRECTORY /opt/qa/soapvalidator/data/soapvalidator/MailClient/Tasks/Bugs/bug30544.xml LOG /opt/ SUITE SMOKE
-    
-    Example: To run all the tests under a specific directory:
-    
-    STAF LOCAL soap EXECUTE zcs-dev.test ZIMBRAQAROOT /opt/qa/soapvalidator/ DIRECTORY /opt/qa/soapvalidator/data/soapvalidator/MailClient/Tasks/Bugs/ LOG /opt/ SUITE SMOKE
-    
-    ************************************************************************
-
-
-At that point you can `C-c` to exit rom the `docker logs -f soap` command.
+There is no output to the terminal until the test is finished. However you can see results accumulate in the `results` directory, which is mounted into the `soap` test container.
