@@ -2,6 +2,7 @@
 # Run the image zimbra/soap-harness:latest, passing in the appropriate
 # settings.
 
+SUMMARY_FILE="$(dirname $0)/results/results-soap.xml"
 DP=$(dirname $0)
 pushd "${DP}"
 ABS=$(pwd)
@@ -44,7 +45,6 @@ docker run --network ${DOCKER_NETWORK} \
 
 # This just periodically counts the results files and reports results
 # so you don't get bored waiting for the test to finish.
-
 SID=$(docker ps --filter "name=${CN}" -q)
 while [ "${SID}x" = "x" ]
 do
@@ -59,6 +59,7 @@ do
     sleep ${SW}
 done
 
+SECONDS=0
 while [ "${SID}x" != "x" ]
 do
     echo "$(date) - $(find ${RTD} | wc | awk '{print $1}') completed test(s)..."
@@ -66,4 +67,24 @@ do
     SID=$(docker ps --filter "name=${CN}" -q)
 done
 
-echo "$(date) - Tests finished.  Results in the ${RD} directory."
+duration=$SECONDS
+elapsed=$(echo "$(($duration / 60)) minutes and $(($duration % 60)) seconds elapsed.")
+echo "$(date) - Tests finished. ${elapsed}"
+echo "Results in the ${RD} directory. Summary:"
+# Generate a summary of Pass, Fail, Exception, and Skipped tests.
+awk -f <(cat - <<-'_EOF_'
+    BEGIN {
+        printf("%s:%s:%s:%s\n", "Pass", "Fail", "Exception", "Skipped");
+        P=0; F=0; E=0; S=0;
+    }
+
+    /status="Pass"/ {P+=1;}
+    /status="Fail"/ {F+=1;}
+    /status="Exception"/ {E+=1;}
+    /status="Skipped"/ {S+=1;}
+
+    END {
+        printf("%s:%s:%s:%s\n", P, F, E, S);
+    }
+_EOF_
+) "${SUMMARY_FILE}" | column -ts:
