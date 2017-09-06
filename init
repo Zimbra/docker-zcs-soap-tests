@@ -8,7 +8,6 @@
 
 # Update the config file
 echo "updating config"
-# sed -i.bak -e "s/localhost/${ZIMBRA_HOST}/" -e "s/zimbra\.com/${ZIMBRA_DOMAIN}/" -e "s/test123/${ZIMBRA_PASSWORDS}/" /opt/qa/soapvalidator/conf/global.properties
 sed -i.bak -e "s/ZIMBRA_HOST/${ZIMBRA_HOST}/" -e "s/ZIMBRA_DOMAIN/${ZIMBRA_DOMAIN}/" -e "s/ZIMBRA_PASSWORDS/${ZIMBRA_PASSWORDS}/" /opt/qa/soapvalidator/conf/global.properties
 # Fire up STAF
 export PATH=/usr/local/staf/bin:$PATH
