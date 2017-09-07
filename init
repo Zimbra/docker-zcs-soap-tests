@@ -1,10 +1,25 @@
 #!/bin/bash
 # Perform runtime initialization of container and update the 
 # /opt/zimbra/qa/global.properties with proper configuration
+#
 # Expects the following envirnment variables:
 #   ZIMBRA_HOST
 #   ZIMBRA_DOMAIN
 #   ZIMBRA_PASSWORDS
+#
+# By default, the SanityTest suite will be run and the container will shut down.
+# If, instead, additional argument(s) are provided to this script, then the initial
+# configuration setup will still be performed, STAF will be started and the local
+# services added, but instead of executing the SanityTest and exiting, the
+# additional arguments will be executed.  For example, if this script is 
+# called as follows (it will be installed in the container at /opt/qa/init)...
+#
+#   /opt/qa/init /bin/sleep inifinity
+#
+# ...then the container will be brought up and initialized, but won't do anything
+# automatically.  You can then connect to the container (docker exec -it soap bash)
+# and manually run individual tests.
+# 
 
 # Update the config file
 echo "updating config"
@@ -18,4 +33,12 @@ sleep 5
 echo "adding STAF services"
 STAF local service add service SOAP LIBRARY JSTAF EXECUTE /opt/qa/soapvalidator/bin/zimbrastaf.jar
 STAF local service add service LOG LIBRARY STAFLog
-STAF LOCAL soap EXECUTE ${ZIMBRA_HOST} ZIMBRAQAROOT /opt/qa/soapvalidator/ DIRECTORY  /opt/qa/soapvalidator/data/soapvalidator/SanityTest/ LOG /results/ SUITE SANITY
+
+if [ $# -eq 0 ]
+then
+    echo "running SanityTest suite"
+    STAF LOCAL soap EXECUTE ${ZIMBRA_HOST} ZIMBRAQAROOT /opt/qa/soapvalidator/ DIRECTORY  /opt/qa/soapvalidator/data/soapvalidator/SanityTest/ LOG /results/ SUITE SANITY
+else
+    echo "running ${@}"
+    $@
+fi

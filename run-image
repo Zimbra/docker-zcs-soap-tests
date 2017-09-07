@@ -1,0 +1,37 @@
+#!/bin/bash
+# Run the image zimbra/soap-harness:latest, passing in the appropriate
+# settings.
+
+SUMMARY_FILE="$(dirname $0)/results/results-soap.xml"
+DP=$(dirname $0)
+pushd "${DP}"
+ABS=$(pwd)
+popd
+
+CN=soap
+EF="${DP}/.env"
+RD="${DP}/results"
+RTD="${RD}/soapvalidator/SanityTest"
+SW=10
+SW2=30
+
+if [ ! -f "${EF}" ]
+then
+    echo "Please copy DOT-env to ${EF} and update as necessary. Then re-run this script."
+    exit 1
+fi
+. "${EF}"
+
+docker run --network ${DOCKER_NETWORK} \
+  --name ${CN} \
+  -v "${ABS}/results":/results \
+  --dns ${DOCKER_DNS} --dns 8.8.8.8 \
+  --hostname ${CN}.test \
+  --env-file "${EF}" \
+  -d \
+  --rm \
+  zimbra/soap-harness:latest \
+  /bin/sleep infinity
+
+echo "Image is running. You can connect to it as follows:"
+echo "docker exec -it soap bash"
