@@ -55,7 +55,7 @@ _Notes:
 2. When you are through with the `soap` container just do `docker stop soap` and it will be cleaned up.
 
 
-### Final output from test
+### Final output from run-test-suite
 
 In addition to accumulating the results into the `results` directory, the `run-test-suite` will print out some summary results (timing and pass/fail info) at the end of the run.  Something like this:
 
@@ -64,5 +64,25 @@ In addition to accumulating the results into the `results` directory, the `run-t
     Pass  Fail  Exception  Skipped
     196   24    4          5
 
+### Further run-test-suite analysis
 
+After the `run-test-suite` command finishes, you may also execute the `./analyze-results` script.  This will print out a table like the following:
+
+    ##  Test                                       Test_Case_Pass  Test_Case_Fail  SOAP_Pass  Soap_Fail
+    --  ----                                       --------------  --------------  ---------  ---------
+    1   AccountLoggerRequest_sanity.txt            4               0               15         0
+    2   AccountRequest_sanity.txt                  16              0               49         0
+    ...
+    52  WhiteBlackList_sanity.txt                  2               0               11         0
+    53  ZimletRequest_sanity.txt                   11              0               36         0
+
+
+For each test:
+
+- `Test_Case_Pass` is number of passing test cases
+- `Test_Case_Fail` is number of failing test cases
+- `SOAP_Pass` is number of passing SOAP Resquests/Responses
+- `Soap_Fail` is number of failing SOAP Resquests/Responses
+
+Any lines with just a test name but no numbers indicates a test where an exception was raised.
 

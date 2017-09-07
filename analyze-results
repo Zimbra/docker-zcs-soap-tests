@@ -1,0 +1,40 @@
+#!/bin/bash
+# Run this script to do an analysis of the results
+# folder and print out a table that shows the 
+# count of passing & failing test cases and
+# SOAP request/response calls.
+# Rows with no data are ones where an exception was raised.
+DN=$(dirname $0)
+TP="${DN}/results/soapvalidator/SanityTest"
+
+function gen_report {
+echo "##:Test:Test_Case_Pass:Test_Case_Fail:SOAP_Pass:Soap_Fail"
+echo "--:----:--------------:--------------:---------:---------"
+IDX=0;
+for t in $(find "${TP}" -name '*.txt')
+do 
+    IDX=$(expr $IDX + 1)
+    echo -n "${IDX}:$(basename "${t}"):"
+    cat "${t}" | awk -f <(cat - <<-'_EOF_'
+        /TEST CASE Results/ {
+            split($4, tcpa, "(");
+            tcp=tcpa[1];
+            split($6, tcfa, "(");
+            tcf=tcfa[1];
+        }
+        /REQUEST\/RESPONSE Results/ {
+            split($3, rrpa, "(");
+            rrp=rrpa[1];
+            split($5, rrfa, "(");
+            rrf=rrfa[1];
+        }
+        END {
+            printf("%s:%s:%s:%s\n", tcp, tcf, rrp, rrf);
+        }
+_EOF_
+)
+done
+}
+
+gen_report | column -ts:
+
