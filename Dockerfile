@@ -39,17 +39,17 @@ WORKDIR /tmp
 # Add the STAF libraries to the END of the list of places where libraries are searched
 # Some of the libraries included with STAF are wonky and will bork normal commands
 # if they are loaded first.
-RUN curl -L -O https://s3.amazonaws.com/zcsdocker/soapvalidator.tar.gz
+RUN curl -L -O https://s3.amazonaws.com/zcsdocker/soapvalidator-20170906.tar.gz
 RUN curl -L -O http://downloads.sourceforge.net/project/staf/staf/V3.4.26/STAF3426-setup-linux-amd64-NoJVM.bin
 RUN mkdir -p /opt/qa && \
-    tar xzvf /tmp/soapvalidator.tar.gz -C /opt/qa/ && \
+    tar xzvf /tmp/soapvalidator-20170906.tar.gz -C /opt/qa/ && \
     chmod +x /tmp/STAF3426-setup-linux-amd64-NoJVM.bin && \
     /tmp/STAF3426-setup-linux-amd64-NoJVM.bin -i silent \
        -DACCEPT_LICENSE=1 \
        -DCHOSEN_INSTALL_SET=Custom \
        -DCHOSEN_INSTALL_FEATURE_LIST=STAF,ExtSvcs,Langs,Codepage && \
     rm /tmp/STAF3426-setup-linux-amd64-NoJVM.bin && \
-    rm /tmp/soapvalidator.tar.gz && \
+    rm /tmp/soapvalidator-20170906.tar.gz && \
     echo /usr/local/staf/lib > /etc/ld.so.conf.d/zzz-staf.conf && \
     ldconfig
 
